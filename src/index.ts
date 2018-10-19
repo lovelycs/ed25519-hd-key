@@ -1,13 +1,8 @@
 import * as createHmac from 'create-hmac'
-import * as naclFactory from 'js-nacl';
+import * as naclFactory from '@sisi/tweetnacl-blake2b';
 
 import { replaceDerive, pathRegex } from './utils';
 
-interface Nacl {
-    crypto_sign_seed_keypair: (
-        val: Buffer,
-    ) => { signPk: Buffer; signSk: Buffer };
-}
 type Hex = string;
 type Path = string;
 
@@ -16,11 +11,8 @@ type Keys = {
     chainCode: Buffer;
 };
 
-const ED25519_CURVE = 'ed25519 seed';
+const ED25519_CURVE = 'ed25519 blake2b seed';
 const HARDENED_OFFSET = 0x80000000;
-
-let naclInstance: Nacl;
-naclFactory.instantiate((nacl: Nacl) => (naclInstance = nacl));
 
 export const getMasterKeyFromSeed = (seed: Hex): Keys => {
     const hmac = createHmac('sha512', ED25519_CURVE);
@@ -50,12 +42,14 @@ const CKDPriv = ({ key, chainCode }: Keys, index: number): Keys => {
     };
 };
 
-export const getPublicKey = (privateKey: Buffer, withZeroByte = true): Buffer => {
-    const { signPk } = naclInstance.crypto_sign_seed_keypair(privateKey);
-    const zero = Buffer.alloc(1, 0);
-    return withZeroByte ?
-        Buffer.concat([zero, Buffer.from(signPk)]) :
-        Buffer.from(signPk);
+export const getPublicKey = (seed) => {
+    const { 
+        secretKey, publicKey
+    } = naclFactory.sign.keyPair.fromSeed(seed);
+    return {
+        publicKey, 
+        privateKey: secretKey
+    };
 };
 
 export const isValidPath = (path: string): boolean => {

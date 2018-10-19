@@ -1,145 +1,123 @@
 import { derivePath, getPublicKey, getMasterKeyFromSeed } from './';
 
-const vector_1_seed = '000102030405060708090a0b0c0d0e0f';
-const vector_1 = [
-    {
-        path: "m/0'",
-        chainCode:
-            '8b59aa11380b624e81507a27fedda59fea6d0b779a778918a2fd3590e16e9c69',
-        key: '68e0fe46dfb67e368c75379acec591dad19df3cde26e63b93a8e704f1dade7a3',
-        publicKey:
-            '008c8a13df77a28f3445213a0f432fde644acaa215fc72dcdf300d5efaa85d350c',
-    },
-    {
-        path: "m/0'/1'",
-        chainCode:
-            'a320425f77d1b5c2505a6b1b27382b37368ee640e3557c315416801243552f14',
-        key: 'b1d0bad404bf35da785a64ca1ac54b2617211d2777696fbffaf208f746ae84f2',
-        publicKey:
-            '001932a5270f335bed617d5b935c80aedb1a35bd9fc1e31acafd5372c30f5c1187',
-    },
-    {
-        path: "m/0'/1'/2'",
-        chainCode:
-            '2e69929e00b5ab250f49c3fb1c12f252de4fed2c1db88387094a0f8c4c9ccd6c',
-        key: '92a5b23c0b8a99e37d07df3fb9966917f5d06e02ddbd909c7e184371463e9fc9',
-        publicKey:
-            '00ae98736566d30ed0e9d2f4486a64bc95740d89c7db33f52121f8ea8f76ff0fc1',
-    },
-    {
-        path: "m/0'/1'/2'/2'",
-        chainCode:
-            '8f6d87f93d750e0efccda017d662a1b31a266e4a6f5993b15f5c1f07f74dd5cc',
-        key: '30d1dc7e5fc04c31219ab25a27ae00b50f6fd66622f6e9c913253d6511d1e662',
-        publicKey:
-            '008abae2d66361c879b900d204ad2cc4984fa2aa344dd7ddc46007329ac76c429c',
-    },
-    {
-        path: "m/0'/1'/2'/2'/1000000000'",
-        chainCode:
-            '68789923a0cac2cd5a29172a475fe9e0fb14cd6adb5ad98a3fa70333e7afa230',
-        key: '8f94d394a8e8fd6b1bc2f3f49f5c47e385281d5c17e65324b0f62483e37e8793',
-        publicKey:
-            '003c24da049451555d51a7014a37337aa4e12d41e485abccfa46b47dfb2af54b7a',
-    },
-];
+const path = 'm/44\'/999\'/';
 
-const vector_2_seed =
-    'fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542';
-const vector_2 = [
-    {
-        path: "m/0'",
-        chainCode:
-            '0b78a3226f915c082bf118f83618a618ab6dec793752624cbeb622acb562862d',
-        key: '1559eb2bbec5790b0c65d8693e4d0875b1747f4970ae8b650486ed7470845635',
-        publicKey:
-            '0086fab68dcb57aa196c77c5f264f215a112c22a912c10d123b0d03c3c28ef1037',
-    },
-    {
-        path: "m/0'/2147483647'",
-        chainCode:
-            '138f0b2551bcafeca6ff2aa88ba8ed0ed8de070841f0c4ef0165df8181eaad7f',
-        key: 'ea4f5bfe8694d8bb74b7b59404632fd5968b774ed545e810de9c32a4fb4192f4',
-        publicKey:
-            '005ba3b9ac6e90e83effcd25ac4e58a1365a9e35a3d3ae5eb07b9e4d90bcf7506d',
-    },
-    {
-        path: "m/0'/2147483647'/1'",
-        chainCode:
-            '73bd9fff1cfbde33a1b846c27085f711c0fe2d66fd32e139d3ebc28e5a4a6b90',
-        key: '3757c7577170179c7868353ada796c839135b3d30554bbb74a4b1e4a5a58505c',
-        publicKey:
-            '002e66aa57069c86cc18249aecf5cb5a9cebbfd6fadeab056254763874a9352b45',
-    },
-    {
-        path: "m/0'/2147483647'/1'/2147483646'",
-        chainCode:
-            '0902fe8a29f9140480a00ef244bd183e8a13288e4412d8389d140aac1794825a',
-        key: '5837736c89570de861ebc173b1086da4f505d4adb387c6a1b1342d5e4ac9ec72',
-        publicKey:
-            '00e33c0f7d81d843c572275f287498e8d408654fdf0d1e065b84e2e6f157aab09b',
-    },
-    {
-        path: "m/0'/2147483647'/1'/2147483646'/2'",
-        chainCode:
-            '5d70af781f3a37b829f0d060924d5e960bdc02e85423494afc0b1a41bbe196d4',
-        key: '551d333177df541ad876a60ea71f00447931c0a9da16f227c11ea080d7391b8d',
-        publicKey:
-            '0047150c75db263559a70d5778bf36abbab30fb061ad69f69ece61a72b0cfa4fc0',
-    },
-];
+describe('Vector 1', () => {
+    let seedHex = '899b4ee8ce42e2c090f28d3523279e2bdfe6b868b5742f2398db9af26e854d4457f61410ad0dd292e6db75e65efcb2d341ad5e330abb683c60bf7d1c793c463f';
 
-describe('Test vectors', () => {
-    // https://github.com/satoshilabs/slips/blob/master/slip-0010.md#test-vector-1-for-ed25519
-    describe('Vector 1', () => {
-        it('should have valid keys for vector 1 seed hex', () => {
-            const { key, chainCode } = getMasterKeyFromSeed(vector_1_seed);
-            expect(key.toString('hex')).toEqual(
-                '2b4be7f19ee27bbf30c667b642d5f4aa69fd169872f8fc3059c08ebae2eb19e7',
-            );
-            expect(chainCode.toString('hex')).toEqual(
-                '90046a93de5380a72b5e45010748567d5ea02bbf6522f979e05c0d8d8ca9fffb',
-            );
-        });
-        vector_1.forEach(vector => {
-            it(`should valid for ${vector.path}`, () => {
-                const { key, chainCode } = derivePath(
-                    vector.path,
-                    vector_1_seed,
-                );
-                expect({
-                    path: vector.path,
-                    key: key.toString('hex'),
-                    chainCode: chainCode.toString('hex'),
-                    publicKey: getPublicKey(key).toString('hex'),
-                }).toEqual(vector);
-            });
-        });
+    it('should have valid keys for vector 1 seed hex', () => {
+        const { key } = getMasterKeyFromSeed(seedHex);
+        expect(key.toString('hex')).toEqual(
+            'f84cdd034c4de6ed4eac92baf99b4d44abb1d55d1e0056ff3a534612069b1a13',
+        );
     });
-    // https://github.com/satoshilabs/slips/blob/master/slip-0010.md#test-vector-2-for-ed25519
-    describe('Vector 2', () => {
-        it('should have valid keys for vector 2 seed hex', () => {
-            const { key, chainCode } = getMasterKeyFromSeed(vector_2_seed);
-            expect(key.toString('hex')).toEqual(
-                '171cb88b1b3c1db25add599712e36245d75bc65a1a5c9e18d76f9f2b1eab4012',
-            );
-            expect(chainCode.toString('hex')).toEqual(
-                'ef70a74db9c3a5af931b5fe73ed8e1a53464133654fd55e7a66f8570b8e33c3b',
-            );
-        });
-        vector_2.forEach(vector => {
-            it(`should valid for ${vector.path}`, () => {
-                const { key, chainCode } = derivePath(
-                    vector.path,
-                    vector_2_seed,
-                );
-                expect({
-                    path: vector.path,
-                    key: key.toString('hex'),
-                    chainCode: chainCode.toString('hex'),
-                    publicKey: getPublicKey(key).toString('hex'),
-                }).toEqual(vector);
-            });
-        });
-    });
+
+    let Accounts = [
+        {
+            key: '4495f8ac7466a4bad825d3c1741e514baa41ce7c413bedcdd24c138e104b6934',
+            publicKey: '7ad56d821d20b94460115a1cb448076554f5f927d25b2279483afceb514ef713'
+        },{
+            key: '66655a25a6713e39be5224dd7903649c4a7ca328b3e563d44875bd138ce612c9',
+            publicKey: '8fdfa40c32c809e88dfbc75596eac2b4a4daea21ad4f7d967bee33ad42109bd1'
+        },{
+            key: 'eef125116fc40628d67f5b89a7ce96a34554432f7ff697f2beb92025a1c6522e',
+            publicKey: 'ceab48f10a95a76c2c7f734913fa138593ef4a6b8673629626b61e2a11573a42'
+        },{
+            key: '1abe5c297e1b32b3521538e61108602c75a50887da39720feaf8949fb953e213',
+            publicKey: '214c548720d1cf448f677fb83ed962dbe4c5de3be52fcba4f58e0b21cfc6edc9'
+        },{
+            key: 'da66f0f3a2ecf51ee0983e99d73fce990b5526135149c4436f4c3d2d7f7a99c7',
+            publicKey: 'f3b1d2ef43466c8cabcfba3ee0c103819d3c702d3dc207438b7d9c8a70b07fd1'
+        },{
+            key: '3eaa5490e0d5980511219067a63d5572e27e671a9d33d63efc540b2c2485d057',
+            publicKey: '1263c99130be7a1444c01ffb2004811dd43b19344b6ef247be1d9a66d296e598'
+        },{
+            key: 'c245393ead655eda745515ab9c52e81a739d2373b89a1b1fda41b3d43675868a',
+            publicKey: '34b7bf144834a35832fa978c9c2da75b4732a659c2e89fceb59ea862c56d05c5'
+        },{
+            key: '6f96308b64e03858b8f0a2b00e5d83b91f38418b7c4cc31bfcf1dcf7e4498f32',
+            publicKey: 'd737123b391f5b3c8d187d69a76854ff1d36ad1a6f9d082e165f7924dabc2396'
+        },{
+            key: '9af654ce607d6b89c89b4d1128b421fbbb320a1e4c58299917645359b3e0e265',
+            publicKey: '62d9a266c09d0772da2b3926593a4d1eae21943d25c5662f7e4ebeb34f7e84aa'
+        },{
+            key: '1463cbb2f8aa501f6948bee523df0f3309305fc0a92e9f730fe02be38cff78bb',
+            publicKey: '69a02c39243cdfa052a6e1a85328e45aca2a4cc70bfe8f4eb79da843dd4a938d'
+        }
+    ];
+
+    verification(Accounts, seedHex);
 });
+
+describe('Vector 2', () => {
+    let seedHex = '21a107743295dfec434254374fdbb43ee4701fa699acce6d1810ddae7d356aeeb10bedc09358e5cf8860fc16d225c422f0a44a708267bf0d2bbbbcd3bd299a49';
+
+    it('should have valid keys for vector 2 seed hex', () => {
+        const { key } = getMasterKeyFromSeed(seedHex);
+        expect(key.toString('hex')).toEqual(
+            '12e93115ee269dd47396451d19352a89c839147fa5a1c917f960507a3e216cae',
+        );
+    });
+
+    let Accounts = [
+        {
+            key: '75fc5363932536e25bd739909b8a70f7e84b3ff7932770ff73f8c787610f2c70',
+            publicKey: 'ad8f681c47d9cba78e105bbb76b4fdfdf7fb2136386eb25f03802675a7293f45'
+        },{
+            key: '5653d2ffe2e35e38594dab93f73ded8eca6e29ee504c6b80bb0889abdbcf18ee',
+            publicKey: '519ef86747b91325157a99af40f0150ddb76e47d557d312084db86e5e1dfd89a'
+        },{
+            key: 'a30e506f4d1a1870cae817b8bf4d2596a4d9dc041f8951ed011a2e3498a09eb4',
+            publicKey: '2cb4c310172d8197193b871eeffc54a29ce8b47b63779ebef91ad3a23fc90064'
+        },{
+            key: '916cbc771c9d298434100fac6041e197c0204ef808939c27a0050853d0a96aeb',
+            publicKey: 'a9786f439164bbf5648a8e3315abf63dc6d879cf253d0982178573372e20d3a2'
+        },{
+            key: '8d36da4ecb473b0405c53e243e78815eb9d82e0683de77d7ff5bba62c9ccfe13',
+            publicKey: '19fccfc58c8c8b9cc3c10b492bacd4c808bd728d2ab906bafd70e05a2e4e44ee'
+        },{
+            key: 'c71cc9d1f88617b134ff6d5cfe461712bf16a4e17beceb9153cd7cd5d36176fe',
+            publicKey: '38c99c94ea6a341e16d2d3c9594920b038a9d9820aa0d9a0a51bc36976a1f92a'
+        },{
+            key: '1efb9f7a8720b39d9c25cf626ef84265d64ed219038c1927d910d61690830ea8',
+            publicKey: 'df543848c0a24e7c86ea4a110ce388ee175089145b7935bfd0e73715dbf2cd97'
+        },{
+            key: '3f547c29642273566102a68446eaea321f1d72de817385ae57853f65e29c012f',
+            publicKey: '0277f71cf5779c0b23c0b3ef0b070d9b6232a0735b7731bc6e7618ec0b655636'
+        },{
+            key: '5e0257538730ab10d28acbaddf4cc3a30f3f7393c71b1bb9eefdf4ef2de330c3',
+            publicKey: '10d2ad50e058716446b8a9622fab8ddd52f58bec27332573306da5756db956dd'
+        },{
+            key: 'ab71e9fdb86492ab881db56229a1bdaa4faf39780e86b240bc8d18bf6867d339',
+            publicKey: 'e7262a2eed31b43a3421001f653375a80348c18cf334fa475beee169055894f5'
+        }
+    ];
+
+    verification(Accounts, seedHex);
+});
+
+function verification(Accounts, seedHex) {
+    for (let i=0; i<10; i++) {
+        let currentPath = `${path}${i}\'`;
+        let { key } = derivePath(currentPath, seedHex);
+        
+        let { publicKey } = getPublicKey(key);
+        publicKey = toHex(publicKey);
+
+        describe(currentPath, function() {
+            it('key', function () {
+                expect(key.toString('hex')).toEqual(Accounts[i].key);
+            });
+            it('addr', function () {
+                expect(publicKey).toEqual(Accounts[i].publicKey);
+            });
+        });
+    }
+}
+
+function toHex(byteArr) {
+    let hexArr = Array.prototype.map.call(byteArr, function (bit) {
+        return ('00' + bit.toString(16)).slice(-2);
+    });
+    return hexArr.join('');
+}
